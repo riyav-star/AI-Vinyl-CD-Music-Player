@@ -4,10 +4,11 @@ A vinyl-styled music player with an AI DJ agent. Users describe what they want t
 
 ## Tech stack
 
-**Frontend:** React 18, Vite, lucide-react
-**Backend:** FastAPI, Pydantic
-**AI agent:** LangGraph, LangChain, OpenAI (`gpt-4o-mini`)
-**Storage:** SQLite (schema defined, not yet wired to the API)
+Frontend: React 18, Vite, Lucide React
+Backend: FastAPI, Pydantic
+AI: LangGraph, LangChain, OpenAI
+Storage: SQLite
+Language: Python, JavaScript
 
 ## Features
 
