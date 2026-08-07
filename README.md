@@ -4,41 +4,34 @@ A vinyl-styled music player with an AI DJ agent. Users describe what they want t
 
 ## Tech Stack
 
-* **Frontend:** React 18, Vite, Lucide React
-* **Backend:** FastAPI, Pydantic
-* **AI:** LangGraph, LangChain, OpenAI
-* **Storage:** SQLite
-* **Languages:** Python, JavaScript
+- **Frontend:** React 18, Vite, Lucide React
+- **Backend:** FastAPI, Pydantic
+- **AI:** LangGraph, LangChain, OpenAI (gpt-4o-mini)
+- **Storage:** SQLite
+- **Languages:** Python, JavaScript
 
 ## Features
 
-* Vinyl and CD-inspired music player interface
-* AI DJ agent for natural-language music requests
-* HTML5 audio playback and controls
-* Mood-based music selection
-* AI-powered song searching and filtering
-* Personalized playlist generation
-* Energy and danceability analysis
-* AI DJ chat interface
-* Music library with song metadata
-* Unique music-themed visual design
-* Agentic workflow using LangGraph tools
-* SQLite database structure for future playlist persistence
+- Vinyl and CD-inspired music player interface
+- AI DJ agent for natural-language music requests, using LangGraph tool calling
+- HTML5 audio playback and controls
+- Mood-based playlist creation
+- Energy and danceability metadata on each song
+- Music library page with song metadata
+- SQLite schema in place for future playlist persistence
 
 ## Example AI DJ Requests
 
-Users can interact with the AI DJ using natural language:
+- "Create a chill playlist for studying."
+- "Give me energetic songs for a workout."
+- "Find some romantic music for a date night."
+- "I want something upbeat and happy."
 
-* "Create a chill playlist for studying."
-* "Give me energetic songs for a workout."
-* "Find some romantic music for a date night."
-* "I want something upbeat and happy."
-
-The AI agent interprets the request and decides which music tools to use before creating a playlist.
+The agent interprets the request and decides which tools to call before creating a playlist.
 
 ## Project Structure
 
-```text
+```
 AI-vinyl-cd-music-player/
 │
 ├── backend/
@@ -111,201 +104,97 @@ AI-vinyl-cd-music-player/
 
 ### Backend
 
-Navigate to the backend directory:
-
-```bash
+```
 cd backend
 pip install -r requirements.txt
 ```
 
-Create a `.env` file inside the `backend` directory:
+Create a `.env` file inside the backend directory:
 
-```env
+```
 OPENAI_API_KEY=your_openai_api_key
 ```
 
 Start the FastAPI server:
 
-```bash
+```
 uvicorn main:app --reload
 ```
 
-The API is available at:
-
-```text
-http://localhost:8000
-```
-
-Interactive API documentation is available at:
-
-```text
-http://localhost:8000/docs
-```
+The API runs at `http://localhost:8000`, with interactive docs at `http://localhost:8000/docs`.
 
 ### Frontend
 
-Open another terminal and navigate to the frontend directory:
-
-```bash
+```
 cd frontend
 npm install
 npm run dev
 ```
 
-The application runs at:
-
-```text
-http://localhost:5173
-```
-
-The frontend expects the backend at:
-
-```text
-http://localhost:8000
-```
-
-You can override the backend URL with the `VITE_API_URL` environment variable.
+The app runs at `http://localhost:5173` and expects the backend at `http://localhost:8000`. Override with the `VITE_API_URL` environment variable if needed.
 
 ## How the AI DJ Agent Works
 
-The AI DJ is implemented using a LangGraph agent in:
+The AI DJ is a LangGraph agent defined in `backend/agent/music_agent.py`. A request to `POST /api/agent/chat` is passed into a two-node graph:
 
-```text
-backend/agent/music_agent.py
-```
+- **Agent node** — sends the conversation to the LLM with the music tools bound, so the model can decide whether to call one or respond directly.
+- **Tools node** — executes whichever tool the model chose and returns the result to the agent node.
 
-When a user sends a request to:
-
-```text
-POST /api/agent/chat
-```
-
-the request is passed to the AI DJ agent.
-
-The agent contains two main stages:
-
-1. **LLM Node** — sends the user's request to the language model and determines which music tool should be used.
-2. **Tool Node** — executes the selected tool and returns the results to the agent.
-
-The process continues until the agent has enough information to create the final playlist.
-
-### Agent Workflow
-
-```text
-User Request
-      ↓
-   AI DJ Agent
-      ↓
- Understand Request
-      ↓
- Select Tool
-      ↓
- Execute Tool
-      ↓
- Analyze Results
-      ↓
- More Tools Needed
-      ↓
- Create Playlist
-      ↓
- Return Explanation + Playlist
-```
+These two nodes loop until the model responds without requesting another tool call, at which point the agent's final message and the playlist it built are returned together.
 
 ## AI DJ Tools
 
-The agent can use the following tools:
+- `search_songs(query)` — free-text match against title, artist, genre, mood
+- `filter_by_mood(mood)` — exact match on mood label
+- `filter_by_energy(min_energy)` — songs at or above an energy threshold
+- `create_playlist(songs, name)` — finalizes the selected songs into a named playlist
 
-### `search_songs(query)`
-
-Performs a free-text search against the local music catalog using:
-
-* Song title
-* Artist
-* Genre
-* Mood
-
-### `filter_by_mood(mood)`
-
-Finds songs that match a specific mood.
-
-### `filter_by_energy(min_energy)`
-
-Finds songs with an energy score at or above the specified threshold.
-
-### `create_playlist(songs, name)`
-
-Finalizes the selected songs into a named playlist.
-
-The agent decides which tools to call and in what order based on the user's request.
+The agent decides which tools to call and in what order based on the request.
 
 ## Music Metadata
 
-Each song contains metadata such as:
+Each song includes:
 
-* Title
-* Artist
-* Genre
-* Mood
-* Duration
-* Album artwork
-* Audio source
-* Energy score
-* Danceability score
+- Title, artist, genre, mood, duration
+- Album artwork and audio source
+- Energy score and danceability score
 
-Energy and danceability values allow the AI DJ to make more specific recommendations.
+These scores let the agent filter recommendations more precisely than a text search alone.
 
 ## Conversation Memory
 
-Conversation history is passed through the AI DJ workflow so follow-up requests can maintain context.
+Conversation history is passed into the agent on each request, so follow-up messages should carry context from earlier in the chat — for example, asking to make a playlist "more energetic" after an initial mood-based request. This hasn't been tested against a live OpenAI key yet, so treat it as expected behavior from the implementation rather than a confirmed example.
 
-For example:
-
-```text
-User: Create a chill playlist for studying.
-
-AI DJ: Creates a chill study playlist.
-
-User: Make it more energetic.
-
-AI DJ: Uses the previous request as context and adjusts the recommendations.
-```
-
-The current implementation uses in-memory conversation history.
+The current implementation stores history in a single in-memory list shared across all requests.
 
 ## API Endpoints
 
-| Method | Endpoint          | Description                  |
-| ------ | ----------------- | ---------------------------- |
-| GET    | `/api/music`      | Retrieve all songs           |
-| GET    | `/api/music/{id}` | Retrieve a specific song     |
-| POST   | `/api/playlist`   | Create a mood-based playlist |
-| POST   | `/api/agent/chat` | Send a request to the AI DJ  |
-| GET    | `/health`         | Check backend status         |
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/music` | Retrieve all songs |
+| GET | `/api/music/{id}` | Retrieve a specific song |
+| POST | `/api/playlist` | Create a mood-based playlist |
+| POST | `/api/agent/chat` | Send a request to the AI DJ |
+| POST | `/api/agent/reset` | Clear AI DJ conversation history |
+| GET | `/health` | Check backend status |
 
 ## Known Gaps
 
-* **Spotify integration:** `backend/services/spotify_service.py` is currently a stub. Real Spotify search has not been implemented.
-* **Playlist persistence:** The SQLite schema exists, but playlists are not currently written to the database.
-* **Conversation memory:** The current memory implementation uses a single in-memory list and resets when the server restarts.
-* **User-specific memory:** Conversation history is not yet separated between users.
-* **Song catalog:** Songs currently come from a static local JSON file rather than a live music service.
+- **Spotify integration:** `backend/services/spotify_service.py` is currently a stub. Real Spotify search has not been implemented.
+- **Playlist persistence:** the SQLite schema exists, but no route writes to it yet. Playlists are generated per request and not saved.
+- **Conversation memory:** stored in a single in-memory list that resets on server restart and isn't scoped per user.
+- **Song catalog:** songs come from a static local JSON file rather than a live music service.
 
 ## Future Improvements
 
-* Spotify API integration
-* Persistent user playlists
-* User authentication
-* User-specific AI memory
-* Listening history
-* Playlist editing and saving
-* More advanced music recommendations
-* Audio feature analysis
-* Automatic playlist continuation
-* Expanded AI DJ capabilities
+- Spotify API integration
+- Persistent user playlists
+- User authentication
+- Per-user AI memory
+- Listening history
+- Playlist editing and saving
+- Audio feature analysis
 
 ## License
 
-This project is licensed under the **MIT License**.
-
-See the `LICENSE` file for details.
-
+This project is licensed under the MIT License. See the `LICENSE` file for details.
