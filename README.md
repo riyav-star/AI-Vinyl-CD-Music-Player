@@ -12,10 +12,18 @@ A vinyl-styled music player with an AI DJ agent. Users describe what they want t
 
 ## Features
 
-- Vinyl-style player UI with playback controls and a song library page
-- Mood-based playlist creation through a dedicated endpoint
-- AI DJ chat: describe a mood, activity, or genre and the agent searches the song catalog, filters by mood or energy, and returns a playlist with a short explanation
-- Song metadata includes energy and danceability scores, used by the agent's filtering tools
+- Vinyl and CD-inspired music player interface
+- AI DJ agent for natural-language music requests
+- HTML5 audio playback and controls
+- Mood-based music selection
+- AI-powered song searching and filtering
+- Personalized playlist generation
+- Energy and danceability analysis
+- AI DJ chat interface
+- Music library with song metadata
+- Unique music-themed visual design
+- Agentic workflow using LangGraph tools
+- SQLite database structure for future playlist persistence
 
 ## Project structure
 
