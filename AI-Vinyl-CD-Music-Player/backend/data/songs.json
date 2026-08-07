@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "Midnight Drive",
+    "artist": "AI Radio",
+    "genre": "Chill",
+    "mood": "Focus",
+    "duration": "3:42",
+    "cover": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500",
+    "audio": "",
+    "energy": 0.35,
+    "danceability": 0.42
+  },
+  {
+    "id": 2,
+    "title": "Neon Dreams",
+    "artist": "Future Sounds",
+    "genre": "Electronic",
+    "mood": "Energy",
+    "duration": "4:10",
+    "cover": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500",
+    "audio": "",
+    "energy": 0.88,
+    "danceability": 0.82
+  },
+  {
+    "id": 3,
+    "title": "Golden Hour",
+    "artist": "Sunset Collective",
+    "genre": "Indie",
+    "mood": "Happy",
+    "duration": "3:56",
+    "cover": "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=500",
+    "audio": "",
+    "energy": 0.62,
+    "danceability": 0.65
+  },
+  {
+    "id": 4,
+    "title": "After Hours",
+    "artist": "Nightwave",
+    "genre": "R&B",
+    "mood": "Romantic",
+    "duration": "4:25",
+    "cover": "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=500",
+    "audio": "",
+    "energy": 0.48,
+    "danceability": 0.58
+  },
+  {
+    "id": 5,
+    "title": "Quiet Skies",
+    "artist": "Dream State",
+    "genre": "Ambient",
+    "mood": "Chill",
+    "duration": "5:02",
+    "cover": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=500",
+    "audio": "",
+    "energy": 0.18,
+    "danceability": 0.22
+  }
+]
